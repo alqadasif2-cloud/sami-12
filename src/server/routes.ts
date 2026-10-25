@@ -23,6 +23,8 @@ import {
   getPrivateMessagesList,
   savePrivateMessageRecord,
   saveFullChallengeAndTrades,
+  getLatestAppUpdate,
+  saveAppUpdateRecord,
 } from './db';
 import { authenticateToken, requireAuth, requireRole, generateToken, verifyToken } from './auth';
 import { saveFile, getFile } from './storage';
@@ -855,5 +857,80 @@ apiRouter.post('/fcm/unregister', requireAuth, async (req, res) => {
     res.status(500).json({ error: 'فشل إلغاء تسجيل رمز الجهاز: ' + (err?.message || err) });
   }
 });
+
+// ==========================================
+// 11. APP UPDATES (SHARED DATABASE & RBAC)
+// ==========================================
+
+// GET /api/app-updates - Get the latest update from the shared database
+apiRouter.get('/app-updates', async (req, res) => {
+  try {
+    const update = await getLatestAppUpdate();
+    res.json({ success: true, update });
+  } catch (err: any) {
+    res.status(500).json({ error: 'فشل استرجاع إعدادات التحديث: ' + (err?.message || err) });
+  }
+});
+
+apiRouter.get('/app-updates/latest', async (req, res) => {
+  try {
+    const update = await getLatestAppUpdate();
+    res.json({ success: true, update });
+  } catch (err: any) {
+    res.status(500).json({ error: 'فشل استرجاع إعدادات التحديث: ' + (err?.message || err) });
+  }
+});
+
+// POST /api/app-updates - Publish update (STRICT: OWNER ONLY)
+apiRouter.post('/app-updates', requireAuth, requireRole('owner'), async (req, res) => {
+  try {
+    const { versionName, versionCode, downloadUrl, description, isMandatory, minSupportedVersionCode } = req.body;
+
+    if (!versionName || typeof versionName !== 'string' || !versionName.trim()) {
+      return res.status(400).json({ error: 'يرجى إدخال رقم الإصدار (versionName)' });
+    }
+
+    const codeNum = parseInt(versionCode, 10);
+    if (isNaN(codeNum) || codeNum <= 0) {
+      return res.status(400).json({ error: 'يرجى إدخال كود إصدار رقمي صحيح (versionCode)' });
+    }
+
+    if (!downloadUrl || typeof downloadUrl !== 'string' || !downloadUrl.trim()) {
+      return res.status(400).json({ error: 'يرجى إدخال رابط تحميل الـ APK الصحيح' });
+    }
+
+    const savedUpdate = await saveAppUpdateRecord({
+      versionName: versionName.trim(),
+      versionCode: codeNum,
+      downloadUrl: downloadUrl.trim(),
+      description: description ? String(description).trim() : '',
+      isMandatory: !!isMandatory,
+      minSupportedVersionCode: minSupportedVersionCode ? parseInt(minSupportedVersionCode, 10) : undefined,
+      publishedBy: req.user!.displayName || 'Sami',
+    });
+
+    // Notify registered devices about the new update
+    try {
+      const allUsers = await getAllUsersList();
+      const recipientIds = allUsers.map((u) => u.id);
+      if (recipientIds.length > 0) {
+        sendNotificationToUsers(recipientIds, {
+          title: isMandatory ? '⚠️ تحديث إجباري متوفر للتطبيق' : '✨ تحديث جديد متوفر للتطبيق',
+          body: `الإصدار ${savedUpdate.versionName}: ${savedUpdate.description.slice(0, 100) || 'تحسينات جديدة متاحة الآن'}`,
+          chatType: 'channel',
+        }).catch((e) => console.warn('[FCM] App update broadcast notice:', e));
+      }
+    } catch (_: any) {}
+
+    res.json({
+      success: true,
+      message: 'تم نشر التحديث وحفظه في قاعدة البيانات المشتركة بنجاح 🚀',
+      update: savedUpdate,
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: 'فشل حفظ ونشر التحديث في قاعدة البيانات: ' + (err?.message || err) });
+  }
+});
+
 
 

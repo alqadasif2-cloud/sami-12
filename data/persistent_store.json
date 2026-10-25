@@ -147,5 +147,16 @@
         "timestamp": 1792738179852
       }
     ]
+  },
+  "appUpdates": {
+    "id": "latest",
+    "versionName": "1.3.1",
+    "versionCode": 12,
+    "downloadUrl": "https://github.com/alqadasif2-cloud/sami-12/releases/latest",
+    "description": "تحديث استقرار وإصلاح شامل لمنظومة مزامنة التحديثات والتحدي.",
+    "isMandatory": false,
+    "minSupportedVersionCode": 11,
+    "publishedBy": "القائد Sami",
+    "updatedAt": 1792904572922
   }
 }

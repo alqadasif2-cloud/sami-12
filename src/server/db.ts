@@ -66,6 +66,7 @@ interface LocalDiskStore {
   privateMessages: Record<string, any[]>;
   challenges: Record<string, any>;
   trades: Record<string, any[]>;
+  appUpdates?: AppUpdateRecord;
 }
 
 function loadLocalDiskStore(): LocalDiskStore {
@@ -815,4 +816,98 @@ export async function saveFullChallengeAndTrades(userId: number, challenge: Chal
   diskStore.trades[String(userId)] = trades;
   saveLocalDiskStore(diskStore);
 }
+
+// ============================================================================
+// APP UPDATES & VERSION MANAGEMENT (SHARED DATABASE STORE)
+// ============================================================================
+
+export interface AppUpdateRecord {
+  id: string; // 'latest'
+  versionName: string;
+  versionCode: number;
+  downloadUrl: string;
+  description: string;
+  isMandatory: boolean;
+  minSupportedVersionCode?: number;
+  publishedBy?: string;
+  updatedAt: number;
+}
+
+const DEFAULT_APP_UPDATE: AppUpdateRecord = {
+  id: 'latest',
+  versionName: '1.3.0',
+  versionCode: 11,
+  downloadUrl: 'https://github.com/alqadasif2-cloud/sami-12/actions',
+  description: 'الإصدار 1.3.0 متوفر الآن مع تحسينات في حماية الضيوف وسرعة الباقات وإدارة المشرفين.',
+  isMandatory: false,
+  minSupportedVersionCode: 11,
+  publishedBy: 'Sami',
+  updatedAt: Date.now(),
+};
+
+export async function getLatestAppUpdate(): Promise<AppUpdateRecord> {
+  if (firestoreClient) {
+    try {
+      const doc = await firestoreClient.collection('app_updates').doc('latest').get();
+      if (doc.exists) {
+        const data = doc.data() as any;
+        return {
+          id: 'latest',
+          versionName: data.versionName || DEFAULT_APP_UPDATE.versionName,
+          versionCode: Number(data.versionCode) || DEFAULT_APP_UPDATE.versionCode,
+          downloadUrl: data.downloadUrl || DEFAULT_APP_UPDATE.downloadUrl,
+          description: data.description || DEFAULT_APP_UPDATE.description,
+          isMandatory: !!data.isMandatory,
+          minSupportedVersionCode: data.minSupportedVersionCode ? Number(data.minSupportedVersionCode) : undefined,
+          publishedBy: data.publishedBy || 'Sami',
+          updatedAt: Number(data.updatedAt) || Date.now(),
+        };
+      }
+    } catch (err: any) {
+      console.warn('[Sami DB] Firestore getLatestAppUpdate notice:', err.message);
+    }
+  }
+
+  if (diskStore.appUpdates) {
+    return diskStore.appUpdates;
+  }
+
+  return DEFAULT_APP_UPDATE;
+}
+
+export async function saveAppUpdateRecord(update: {
+  versionName: string;
+  versionCode: number;
+  downloadUrl: string;
+  description: string;
+  isMandatory: boolean;
+  minSupportedVersionCode?: number;
+  publishedBy?: string;
+}): Promise<AppUpdateRecord> {
+  const record: AppUpdateRecord = {
+    id: 'latest',
+    versionName: update.versionName.trim(),
+    versionCode: Math.floor(Number(update.versionCode) || 10),
+    downloadUrl: update.downloadUrl.trim(),
+    description: update.description ? update.description.trim() : '',
+    isMandatory: !!update.isMandatory,
+    minSupportedVersionCode: update.minSupportedVersionCode ? Math.floor(Number(update.minSupportedVersionCode)) : undefined,
+    publishedBy: update.publishedBy || 'Sami',
+    updatedAt: Date.now(),
+  };
+
+  if (firestoreClient) {
+    try {
+      await firestoreClient.collection('app_updates').doc('latest').set(record);
+    } catch (err: any) {
+      console.warn('[Sami DB] Firestore saveAppUpdateRecord notice:', err.message);
+    }
+  }
+
+  diskStore.appUpdates = record;
+  saveLocalDiskStore(diskStore);
+  console.log('[Sami DB] Successfully saved app update to shared store:', record.versionName, `(v${record.versionCode})`);
+  return record;
+}
+
 
