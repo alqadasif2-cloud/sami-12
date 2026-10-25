@@ -55,7 +55,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
       # 3. Install Node Dependencies
       - name: Install Node Dependencies
@@ -89,7 +88,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-          cache: 'gradle'
 
       # 7. Accept Android SDK Licenses & Setup
       - name: Accept Android SDK Licenses

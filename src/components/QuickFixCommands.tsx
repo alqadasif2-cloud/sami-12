@@ -138,16 +138,16 @@ git push origin main`;
             </div>
             <ol className="list-decimal list-inside space-y-2 text-slate-200 pr-2">
               <li>
-                {isAr ? 'اضغط مباشرة على هذا الرابط لإنشاء الملف مسبق التسمية في مستودعك: ' : 'Click this direct link to create the pre-named file in your repo: '}
+                {isAr ? 'اضغط مباشرة على هذا الرابط لتعديل مسار البناء build-apk.yml في مستودعك: ' : 'Click this direct link to update build-apk.yml in your repo: '}
                 <div className="mt-2 flex flex-wrap gap-2">
                   <a
-                    href="https://github.com/alqadasif2-cloud/sami-11/new/main?filename=gradle.properties"
+                    href="https://github.com/alqadasif2-cloud/sami-12/edit/main/.github/workflows/build-apk.yml"
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition-all"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
-                    <span>{isAr ? 'إنشاء ملف gradle.properties مباشرة على GitHub' : 'Create gradle.properties on GitHub'}</span>
+                    <span>{isAr ? 'تعديل build-apk.yml في مستودع sami-12 مباشرة' : 'Edit build-apk.yml in sami-12'}</span>
                   </a>
                   <a
                     href="https://github.com/alqadasif2-cloud/sami-11/edit/main/.github/workflows/build-apk.yml"
@@ -156,7 +156,7 @@ git push origin main`;
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/30 text-xs font-semibold transition-all"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
-                    <span>{isAr ? 'تعديل مسار build-apk.yml المحصّن' : 'Edit build-apk.yml on GitHub'}</span>
+                    <span>{isAr ? 'تعديل build-apk.yml في sami-11' : 'Edit build-apk.yml in sami-11'}</span>
                   </a>
                 </div>
               </li>
