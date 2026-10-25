@@ -922,7 +922,8 @@ fun FullScreenImageViewerDialog(
         coroutineScope.launch {
             val result = FirebaseCloudHelper.saveImageToGallery(context, imageUrl)
             isSaving = false
-            result.onSuccess { msg ->
+            if (result.isSuccess) {
+                val msg = result.getOrNull() ?: "تم حفظ الصورة في المعرض بنجاح"
                 isFeedbackError = false
                 feedbackMessage = msg
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
@@ -930,8 +931,8 @@ fun FullScreenImageViewerDialog(
                 if (feedbackMessage == msg) {
                     feedbackMessage = null
                 }
-            }.onFailure { err ->
-                val errMsg = err.message ?: "تعذر حفظ الصورة في المعرض"
+            } else {
+                val errMsg = result.exceptionOrNull()?.message ?: "تعذر حفظ الصورة في المعرض"
                 isFeedbackError = true
                 feedbackMessage = errMsg
                 Toast.makeText(context, errMsg, Toast.LENGTH_SHORT).show()
