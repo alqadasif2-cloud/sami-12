@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Terminal, Copy, Check, Globe, FileCode, CheckCircle2 } from 'lucide-react';
+import { Terminal, Copy, Check, Globe, FileCode, CheckCircle2, ExternalLink } from 'lucide-react';
 import { ROOT_GRADLE_PROPERTIES } from '../data/fixData';
 
 interface QuickFixCommandsProps {
@@ -138,22 +138,30 @@ git push origin main`;
             </div>
             <ol className="list-decimal list-inside space-y-2 text-slate-200 pr-2">
               <li>
-                {isAr ? 'افتح رابط المستودع على GitHub: ' : 'Open the repository on GitHub: '}
-                <a
-                  href="https://github.com/alqadasif2-cloud/sami-11"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-teal-400 font-mono underline hover:text-teal-300"
-                >
-                  https://github.com/alqadasif2-cloud/sami-11
-                </a>
+                {isAr ? 'اضغط مباشرة على هذا الرابط لإنشاء الملف مسبق التسمية في مستودعك: ' : 'Click this direct link to create the pre-named file in your repo: '}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <a
+                    href="https://github.com/alqadasif2-cloud/sami-11/new/main?filename=gradle.properties"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition-all"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>{isAr ? 'إنشاء ملف gradle.properties مباشرة على GitHub' : 'Create gradle.properties on GitHub'}</span>
+                  </a>
+                  <a
+                    href="https://github.com/alqadasif2-cloud/sami-11/edit/main/.github/workflows/build-apk.yml"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/30 text-xs font-semibold transition-all"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>{isAr ? 'تعديل مسار build-apk.yml المحصّن' : 'Edit build-apk.yml on GitHub'}</span>
+                  </a>
+                </div>
               </li>
               <li>
-                {isAr ? 'اضغط على زر ' : 'Click '}
-                <strong className="text-white">Add file</strong> ➔ <strong className="text-white">Create new file</strong>.
-              </li>
-              <li>
-                {isAr ? 'في خانة اسم الملف (Name your file)، اكتب: ' : 'In the filename box, type: '}
+                {isAr ? 'في حال دخلت يدوياً: في خانة اسم الملف اكتب: ' : 'Or type filename manually: '}
                 <code className="text-emerald-300 bg-slate-900 px-1.5 py-0.5 rounded font-mono font-bold">gradle.properties</code>
               </li>
               <li>
