@@ -1,0 +1,6 @@
+{
+  "name": "Sami APK - GitHub Actions CI/CD Fix & Diagnostic Center",
+  "description": "حل مشكلة بناء تطبيق سامي Sami Release APK على GitHub Actions ومعالجة أخطاء AndroidX و gradle.properties وحماية مسار البناء كاملاً.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
