@@ -29,7 +29,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Setup Node.js (No rigid cache requirement to avoid lockfile errors)
+      # 2. Setup Node.js (بدون كاش إجباري لتجنب أخطاء lockfile)
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
